@@ -4,7 +4,8 @@ import {
   Truck, Navigation, Fuel, User, LogOut, Camera, X, Check, Clock, 
   Wifi, ChevronDown, Lock, Droplet, CreditCard, ArrowRight, 
   AlertTriangle, RefreshCw, History, Users, Calendar, AlertOctagon, 
-  FileText, QrCode, CheckCircle, Smartphone, ScanLine, Edit2, MapPin
+  FileText, QrCode, CheckCircle, Smartphone, ScanLine, Edit2, MapPin,
+  Wrench, AlertCircle, Disc, HelpCircle
 } from 'lucide-react';
 
 // ==========================================================================================
@@ -135,6 +136,24 @@ const apiLogFuel = async (session, fuelData) => {
     return { success: true };
   } catch (error) {
     showCustomAlert("Errore di Rete", "Impossibile salvare il rifornimento.", 'danger');
+    return { success: false };
+  }
+};
+
+// --- NUOVA FUNZIONE API: REPORT ---
+const apiReportIssue = async (session, reportData) => {
+  try {
+    const payload = {
+      type: 'REPORT', // Necessita gestione lato Google Script
+      driver: session.user.matricola,
+      driverName: session.user.name,
+      targa: session.targa,
+      ...reportData
+    };
+    await fetchWithRetry(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+    return { success: true };
+  } catch (error) {
+    showCustomAlert("Errore Invio", "Impossibile inviare la segnalazione.", 'danger');
     return { success: false };
   }
 };
@@ -453,6 +472,75 @@ const RefuelingModal = ({ onClose, onSave }) => {
   );
 };
 
+// --- NUOVO COMPONENTE: REPORT MODAL ---
+const ReportModal = ({ onClose, onSave }) => {
+  const [category, setCategory] = useState('Spia Accesa');
+  const [notes, setNotes] = useState('');
+  const [isStopped, setIsStopped] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  const categories = [
+    { id: 'Spia Accesa', label: 'Spia Cruscotto', icon: AlertCircle, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
+    { id: 'Pneumatici', label: 'Pneumatici', icon: Disc, color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-200' },
+    { id: 'Motore/Meccanica', label: 'Motore', icon: Wrench, color: 'text-slate-600', bg: 'bg-slate-50', border: 'border-slate-200' },
+    { id: 'Carrozzeria', label: 'Danni Esterni', icon: Truck, color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-200' },
+    { id: 'Altro', label: 'Altro', icon: HelpCircle, color: 'text-gray-500', bg: 'bg-gray-50', border: 'border-gray-200' }
+  ];
+
+  const handleSend = async () => {
+      if(!notes) return alert("Inserisci una descrizione del problema.");
+      setSending(true);
+      await onSave({ category, notes, isStopped });
+      setSending(false);
+      onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-[80] bg-black/80 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-md rounded-3xl p-6 relative shadow-2xl overflow-y-auto max-h-[90vh]">
+        <div className="flex justify-between items-center mb-6 border-b pb-4">
+          <h3 className="text-xl font-bold flex items-center gap-2 text-red-600"><AlertTriangle/> Segnala Guasto</h3>
+          <button onClick={onClose}><X/></button>
+        </div>
+        <div className="space-y-4">
+           <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-2 ml-1">Tipo Problema</label>
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                {categories.map((cat) => (
+                    <button 
+                        key={cat.id} 
+                        onClick={() => setCategory(cat.id)}
+                        className={`p-2 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all active:scale-95 ${category === cat.id ? `${cat.bg} ${cat.border} ring-2 ring-blue-400` : 'bg-white border-gray-100 hover:bg-gray-50'}`}
+                    >
+                        <cat.icon className={cat.color} size={24} />
+                        <span className="text-[10px] font-bold text-gray-600 text-center leading-tight">{cat.label}</span>
+                    </button>
+                ))}
+              </div>
+           </div>
+           
+           <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Descrizione Dettagliata</label>
+              <textarea 
+                className="w-full p-4 bg-gray-50 rounded-xl font-bold h-24 resize-none border-2 border-transparent focus:border-red-500 outline-none bg-gray-50" 
+                placeholder="Descrivi il problema..."
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+              />
+           </div>
+
+           <div className="flex items-center gap-3 bg-red-50 p-4 rounded-xl border border-red-100">
+              <input type="checkbox" id="stopped" className="w-6 h-6 accent-red-600" checked={isStopped} onChange={e => setIsStopped(e.target.checked)}/>
+              <label htmlFor="stopped" className="text-sm font-bold text-red-800">Il mezzo è fermo / non marciante?</label>
+           </div>
+
+           <Button onClick={handleSend} loading={sending} variant="danger" icon={Check} className="mt-4">Invia Segnalazione</Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ==========================================================================================
 // --- SCREENS ---
 // ==========================================================================================
@@ -614,6 +702,7 @@ const StartShiftScreen = ({ user, onStart, onLogout }) => {
 const ActiveShiftScreen = ({ session, onEndShift, onAddFuel, onLogout }) => {
   const [time, setTime] = useState("00:00:00");
   const [showFuel, setShowFuel] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   useEffect(() => {
     const i = setInterval(() => {
@@ -623,9 +712,17 @@ const ActiveShiftScreen = ({ session, onEndShift, onAddFuel, onLogout }) => {
     return () => clearInterval(i);
   }, []);
 
+  const handleReportSave = async (data) => {
+      const res = await apiReportIssue(session, data);
+      if(res.success) {
+          showCustomAlert("Segnalazione Inviata", "Il guasto è stato notificato all'ufficio.", "success");
+      }
+  };
+
   return (
     <div className="flex flex-col h-full bg-gray-50">
       {showFuel && <RefuelingModal onClose={() => setShowFuel(false)} onSave={d => { apiLogFuel(session, d); onAddFuel(d); }} />}
+      {showReport && <ReportModal onClose={() => setShowReport(false)} onSave={handleReportSave} />}
       
       <div className="bg-slate-900 text-white p-8 rounded-b-[2.5rem] shadow-xl relative overflow-hidden">
          <button 
@@ -649,16 +746,29 @@ const ActiveShiftScreen = ({ session, onEndShift, onAddFuel, onLogout }) => {
          </div>
       </div>
 
-      <div className="flex-1 p-6 flex flex-col justify-center items-center">
-         <div className="bg-white w-full p-6 rounded-3xl shadow-sm border text-center mb-6">
+      <div className="flex-1 p-6 flex flex-col gap-4 overflow-y-auto">
+         
+         {/* Rifornimenti Box */}
+         <div className="bg-white w-full p-6 rounded-3xl shadow-sm border text-center">
             <h3 className="font-bold text-gray-800 mb-4 flex items-center justify-center gap-2"><Fuel size={20} className="text-orange-500"/> Rifornimenti</h3>
             {session.fuelLogs.length > 0 ? 
                <div className="text-2xl font-black text-emerald-600">{session.fuelLogs.length} <span className="text-sm text-gray-400 font-normal">registrati</span></div> 
                : <p className="text-gray-400 text-sm">Nessuno ancora</p>
             }
-            <Button variant="warning" onClick={() => setShowFuel(true)} className="mt-4" icon={Fuel}>Aggiungi</Button>
+            <Button variant="warning" onClick={() => setShowFuel(true)} className="mt-4" icon={Fuel}>Aggiungi Carburante</Button>
          </div>
-         <Button variant="danger" onClick={onEndShift} icon={LogOut}>Chiudi Turno</Button>
+
+         {/* Guasti Box - Separato */}
+         <div className="bg-white w-full p-6 rounded-3xl shadow-sm border border-red-100 text-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-2 h-full bg-red-500"></div>
+            <h3 className="font-bold text-gray-800 mb-2 flex items-center justify-center gap-2"><Wrench size={20} className="text-red-500"/> Segnalazione Guasti</h3>
+            <p className="text-xs text-gray-400 mb-4">Segnala spie, problemi meccanici o danni.</p>
+            <Button variant="danger" onClick={() => setShowReport(true)} icon={AlertTriangle} className="bg-red-50 text-red-600 border-2 border-red-100 hover:bg-red-100 shadow-none">Apri Segnalazione</Button>
+         </div>
+
+         <div className="flex-1"></div>
+         
+         <Button variant="danger" onClick={onEndShift} icon={LogOut} className="shadow-xl shadow-red-200">Chiudi Turno</Button>
       </div>
     </div>
   );
