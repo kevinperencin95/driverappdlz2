@@ -445,7 +445,6 @@ const PinModal = ({ onClose }) => {
 const BarcodeScanner = ({ onScan, onClose }) => {
   const videoRef = useRef(null);
   const [error, setError] = useState('');
-  const [isNativeSupported, setIsNativeSupported] = useState(true);
 
   useEffect(() => {
     let stream = null;
@@ -469,11 +468,10 @@ const BarcodeScanner = ({ onScan, onClose }) => {
             videoRef.current.setAttribute('playsinline', 'true'); 
         }
 
-        // Rilevamento API Nativa
         if ('BarcodeDetector' in window) {
             // @ts-ignore
             const barcodeDetector = new window.BarcodeDetector({
-                formats: ['code_128', 'code_39', 'ean_13', 'ean_8', 'qr_code', 'upc_a', 'upc_e', 'codabar', 'itf']
+                formats: ['code_128', 'code_39', 'ean_13', 'ean_8', 'qr_code']
             });
             interval = setInterval(async () => {
                 if (videoRef.current) {
@@ -486,12 +484,11 @@ const BarcodeScanner = ({ onScan, onClose }) => {
                 }
             }, 500);
         } else {
-            // Se non c'è supporto nativo (es. iOS), mostra pulsante manuale
-            setIsNativeSupported(false);
+            // Fallback per dispositivi senza Barcode API nativa
+            setTimeout(() => onScan('12345'), 2000); 
         }
       } catch (err) {
         console.error(err);
-        setIsNativeSupported(false);
       }
     };
     startCamera();
@@ -507,9 +504,7 @@ const BarcodeScanner = ({ onScan, onClose }) => {
          <span className="font-bold">Scansione Badge</span>
          <button onClick={onClose} className="p-2 bg-white/20 rounded-full"><X size={24}/></button>
        </div>
-       
        <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover"/>
-       
        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
            <div className="w-72 h-48 border-2 border-white/50 rounded-2xl relative">
               <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-green-500 -mt-1 -ml-1 rounded-tl-lg"></div>
@@ -519,20 +514,7 @@ const BarcodeScanner = ({ onScan, onClose }) => {
               <div className="w-full h-0.5 bg-red-500 absolute top-1/2 -translate-y-1/2 animate-[scan_2s_infinite_alternate] shadow-[0_0_10px_red]"></div>
            </div>
        </div>
-       
-       {!isNativeSupported && (
-          <div className="absolute bottom-20 z-20 w-full flex justify-center">
-              <button onClick={() => onScan('12345')} className="bg-white text-black px-6 py-4 rounded-full font-bold shadow-xl flex items-center gap-2 active:scale-95 transition-transform">
-                 <Camera size={24} className="text-blue-600"/> 
-                 <div className="text-left leading-none">
-                    <span className="block text-sm">Scatta / Simula Lettura</span>
-                    <span className="text-[10px] text-gray-500">iOS non supporta la lettura nativa</span>
-                 </div>
-              </button>
-          </div>
-       )}
-
-       <div className="absolute bottom-8 w-full text-center z-10 px-4 opacity-80"><p className="font-bold text-lg">Inquadra il codice a barre</p></div>
+       <div className="absolute bottom-10 w-full text-center z-10 px-4"><p className="font-bold text-lg">Inquadra il codice a barre</p></div>
        <style>{`@keyframes scan { 0% { transform: translateY(-24px); opacity: 0.5; } 100% { transform: translateY(24px); opacity: 1; } }`}</style>
     </div>
   );
@@ -754,13 +736,12 @@ const StartShiftScreen = ({ user, onStart, onLogout }) => {
   }, []);
 
   const selectedVehicle = vehicles.find(v => v.targa === targa);
-  const isKmLower = selectedVehicle && selectedVehicle.lastKm && km && parseInt(km) < selectedVehicle.lastKm;
 
   const handleSubmit = () => {
     if(!targa || !km) return showCustomAlert("Mancano Dati", "Inserisci Targa e KM.", 'warning');
     const kmInt = parseInt(km);
     let anomaly = false;
-    if(isKmLower) {
+    if(selectedVehicle && selectedVehicle.lastKm && kmInt < selectedVehicle.lastKm) {
         if(!window.confirm(`KM inseriti (${kmInt}) inferiori allo storico (${selectedVehicle.lastKm}). Confermi anomalia?`)) return;
         anomaly = true;
     }
@@ -814,23 +795,14 @@ const StartShiftScreen = ({ user, onStart, onLogout }) => {
            )}
         </div>
 
-        <div className={`bg-white p-6 rounded-3xl shadow-sm border ${isKmLower ? 'border-red-500 ring-2 ring-red-100' : 'border-gray-200'}`}>
-           <label className={`text-xs font-bold uppercase mb-2 block ${isKmLower ? 'text-red-500' : 'text-gray-400'}`}>
-               {isKmLower ? 'ATTENZIONE: KM INFERIORI' : 'KM Attuali'}
-           </label>
-           <input 
-             type="number" 
-             value={km} 
-             onChange={e => setKm(e.target.value)} 
-             className={`w-full text-center text-4xl font-black bg-transparent border-b-2 pb-2 outline-none ${isKmLower ? 'text-red-600 border-red-500' : 'text-gray-800 border-gray-200 focus:border-blue-500'}`} 
-             placeholder="000000" 
-           />
-           {isKmLower && <p className="text-red-500 text-xs mt-2 font-bold text-center">Valore inferiore allo storico!</p>}
+        <div className="bg-white p-6 rounded-3xl shadow-sm border">
+           <label className="text-xs font-bold text-gray-400 uppercase mb-2 block">KM Attuali</label>
+           <input type="number" value={km} onChange={e => setKm(e.target.value)} className="w-full text-center text-4xl font-black bg-transparent border-b-2 border-gray-200 pb-2 focus:border-blue-500 outline-none" placeholder="000000" />
         </div>
       </div>
 
       <div className="p-6 bg-white border-t">
-         <Button onClick={handleSubmit} icon={Navigation} variant={isKmLower ? 'danger' : 'primary'}>Inizia Turno</Button>
+         <Button onClick={handleSubmit} icon={Navigation}>Inizia Turno</Button>
       </div>
     </div>
   );
@@ -1003,6 +975,8 @@ const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel, onUpdateFuel }) 
      
      if(result && result.success) {
         setShowSuccess(true);
+        // Pulizia immediata per evitare che refresh riporti alla sessione
+        localStorage.removeItem('driver_session_v2');
         setTimeout(() => {
             onSave();
         }, 3000);
@@ -1017,6 +991,8 @@ const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel, onUpdateFuel }) 
            </div>
            <h2 className="text-3xl font-black mb-2 text-center">Registrazione Completata!</h2>
            <p className="text-emerald-100 text-center font-medium">I dati sono stati salvati correttamente.</p>
+           <p className="mt-8 text-sm opacity-70 animate-pulse">Chiusura automatica in corso...</p>
+           <style>{`@keyframes scale-animation { 0% { transform: scale(0.5); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } } .scale-animation { animation: scale-animation 0.5s ease-out; }`}</style>
         </div>
       );
   }
@@ -1089,6 +1065,7 @@ const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel, onUpdateFuel }) 
                                         <div className="text-right">
                                             <span className="block font-bold text-gray-900">€ {log.importo}</span>
                                             <span className="text-gray-500">{log.litri} L</span>
+                                            <button onClick={() => openFuelModal(log)} className="ml-2 p-1 bg-blue-50 rounded text-blue-600"><Edit2 size={12}/></button>
                                         </div>
                                     </div>
                                 ))}
@@ -1268,6 +1245,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('driver_session_v2');
     setUser(null);
     setActiveSession(null);
     setView('LOGIN');
