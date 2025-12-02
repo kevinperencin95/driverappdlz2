@@ -5,13 +5,63 @@ import {
   Wifi, ChevronDown, Lock, Droplet, CreditCard, ArrowRight, 
   AlertTriangle, RefreshCw, History, Users, Calendar, AlertOctagon, 
   FileText, QrCode, CheckCircle, Smartphone, ScanLine, Edit2, MapPin,
-  Wrench, AlertCircle, Disc, HelpCircle
+  Wrench, AlertCircle, Disc, HelpCircle, Info
 } from 'lucide-react';
 
 // ==========================================================================================
 // ⚠️ CONFIGURAZIONE API ⚠️
 // ==========================================================================================
 const API_URL = "https://script.google.com/macros/s/AKfycbz8mQgiROz0RkNHE5gSbUkyy8VyDu-09Cqx_UJlpFLHDyaj6NXtt5v_ArSlGwTdxi3T/exec"; 
+
+// ==========================================================================================
+// --- ICONE SPIE REALI (ISO STANDARD - SVG INLINE) ---
+// ==========================================================================================
+// Queste icone sono disegnate per replicare esattamente i simboli del cruscotto.
+
+const IconMotore = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M22,7h-3l-1.3-2.6C17.2,3.5,16.1,3,15,3h-6c-1.1,0-2.2,0.5-2.7,1.4L5,7H2v4h2v6h2v-6h1v6h2v-6h6v6h2v-6h1v6h2 v-6h2V7z M6,7l1-2h10l1,2H6z M10,9h4v3h-4V9z"/>
+  </svg>
+);
+
+const IconOlio = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M22,5.5l-2.9,1.6c-0.2,0.1-0.5,0.2-0.7,0.2c-0.5,0-1-0.2-1.4-0.6l-1.5-1.5H9C6.8,5.2,5,7,5,9.2v2.1 c0,1.9,1.3,3.6,3.2,4.1l8.6,2.2c0.2,0,0.3,0.1,0.5,0.1c1.2,0,2.2-1,2.2-2.2V9.8L22,8.4C22.6,8.1,22.8,7.3,22.5,6.7 C22.2,6.1,21.6,6,21.6,6L22,5.5z M20,20.8c-0.6,0-1-0.4-1-1c0-0.6,0.4-1,1-1s1,0.4,1,1C21,20.3,20.6,20.8,20,20.8z M4,15H2v2h2V15z"/>
+  </svg>
+);
+
+const IconBatteria = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M17,5v2h-2V5h-2v2h-2V5H9v2H7V5H5v14h14V5H17z M8,13H6v-2h2V13z M18,13h-2v2h-2v-2h-2v-2h2V9h2v2h2V13z"/>
+  </svg>
+);
+
+const IconTemperatura = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M8,17v-2h8v2H8z M8,13v-2h8v2H8z M12,2c-2.2,0-4,1.8-4,4v7.2c-1.2,0.9-2,2.4-2,4c0,2.8,2.2,5,5,5s5-2.2 5-5 c0-1.6-0.8-3.1-2-4V6C16,3.8,14.2,2,12,2z"/>
+    <path d="M4,17v2h3v-2H4z M17,17v2h3v-2H17z M3,12v2h3v-2H3z M18,12v2h3v-2H18z"/>
+  </svg>
+);
+
+const IconFreni = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M12,2C6.5,2,2,6.5,2,12s4.5,10,10,10s10-4.5,10-10S17.5,2,12,2z M12,20c-4.4,0-8-3.6-8-8s3.6-8,8-8s8,3.6,8,8 S16.4,20,12,20z"/>
+    <circle cx="12" cy="12" r="6" fill="transparent" stroke="currentColor" strokeWidth="2" />
+    <path d="M11,8h2v5h-2V8z M11,15h2v2h-2V15z"/>
+    <path d="M5.5,6.5C4,8,3,10,3,12s1,4,2.5,5.5" fill="none" stroke="currentColor" strokeWidth="2" />
+    <path d="M18.5,6.5C20,8,21,10,21,12s-1,4-2.5,5.5" fill="none" stroke="currentColor" strokeWidth="2" />
+  </svg>
+);
+
+const IconPneumatici = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M17.5,5c-0.6,0-1.1,0.3-1.4,0.8L12,12.2L7.9,5.8C7.6,5.3,7.1,5,6.5,5C5.7,5,5,5.7,5,6.5c0,0.2,0,0.4,0.1,0.6l5.5,8.5 c0.4,0.6,1,0.9,1.7,0.8c0.6-0.1,1.1-0.5,1.4-1.1l5.7-8.9C19.8,5.7,19.2,5,18.5,5H17.5z"/>
+    <path d="M5,18v2h14v-2H5z M11,18h2v2h-2V18z"/>
+    <path d="M12,2C6.5,2,2,6.5,2,12h2c0-4.4,3.6-8,8-8s8,3.6,8,8h2C22,6.5,17.5,2,12,2z"/>
+    <rect x="11" y="8" width="2" height="5" />
+    <rect x="11" y="15" width="2" height="2" />
+  </svg>
+);
 
 // ==========================================================================================
 // --- UTILITY ---
@@ -125,12 +175,20 @@ const apiStartShift = async (shiftData) => {
 
 const apiLogFuel = async (session, fuelData) => {
   try {
+    // FORMATTAZIONE PER GOOGLE SHEETS (ITALIANO)
+    // Sostituisce il punto con la virgola per importo e litri prima di inviare
+    const formattedFuelData = {
+        ...fuelData,
+        importo: fuelData.importo ? fuelData.importo.toString().replace('.', ',') : '',
+        litri: fuelData.litri ? fuelData.litri.toString().replace('.', ',') : ''
+    };
+
     const payload = {
       type: 'FUEL',
       driver: session.user.matricola,
       driverName: session.user.name,
       targa: session.targa,
-      ...fuelData
+      ...formattedFuelData
     };
     await fetchWithRetry(API_URL, { method: 'POST', body: JSON.stringify(payload) });
     return { success: true };
@@ -457,7 +515,25 @@ const RefuelingModal = ({ onClose, onSave }) => {
              <Input label="Euro (€)" type="number" icon={CreditCard} value={formData.importo} onChange={e => setFormData({...formData, importo: e.target.value})} />
              <Input label="Litri" type="number" icon={Droplet} value={formData.litri} onChange={e => setFormData({...formData, litri: e.target.value})} />
            </div>
-           <Input label="Tessera" icon={Lock} value={formData.tessera} onChange={e => setFormData({...formData, tessera: e.target.value})} />
+           <div className="mb-4">
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Numero Tessera</label>
+                <div className="relative flex items-center w-full rounded-xl border-2 border-transparent focus-within:border-blue-500 bg-gray-50 overflow-hidden">
+                    <div className="pl-4 pr-2 py-4 bg-gray-100 text-gray-500 font-bold border-r border-gray-200 flex items-center gap-2">
+                        <CreditCard size={16}/> 
+                        <span>POMEZIA -</span>
+                    </div>
+                    <input 
+                        type="number" 
+                        value={formData.tessera.replace('POMEZIA - ', '')} 
+                        onChange={e => setFormData({...formData, tessera: `POMEZIA - ${e.target.value}`})} 
+                        placeholder="1234" 
+                        className="w-full p-4 bg-transparent outline-none font-bold text-gray-800 text-lg" 
+                    />
+                </div>
+                <p className="text-[10px] text-gray-400 mt-1 ml-1 flex items-center gap-1">
+                    <Info size={10} /> Il numero si trova sul retro della tessera, accanto alla scritta "POMEZIA -"
+                </p>
+           </div>
            <div>
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Impianto</label>
               <select className="w-full p-4 bg-gray-50 rounded-xl font-bold" value={formData.impianto} onChange={e => setFormData({...formData, impianto: e.target.value})}>
@@ -485,6 +561,16 @@ const ReportModal = ({ onClose, onSave }) => {
     { id: 'Motore/Meccanica', label: 'Motore', icon: Wrench, color: 'text-slate-600', bg: 'bg-slate-50', border: 'border-slate-200' },
     { id: 'Carrozzeria', label: 'Danni Esterni', icon: Truck, color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-200' },
     { id: 'Altro', label: 'Altro', icon: HelpCircle, color: 'text-gray-500', bg: 'bg-gray-50', border: 'border-gray-200' }
+  ];
+
+  // DEFINIZIONE SPIE CON COMPONENTI VETTORIALI ISO REALI
+  const warningLights = [
+    { id: 'Motore', label: 'Motore', icon: IconMotore, color: 'text-amber-500', bg: 'bg-amber-50', border: 'border-amber-200' },
+    { id: 'Olio', label: 'Olio', icon: IconOlio, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
+    { id: 'Batteria', label: 'Batteria', icon: IconBatteria, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
+    { id: 'Temperatura', label: 'Temperatura', icon: IconTemperatura, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
+    { id: 'Freni', label: 'Freni', icon: IconFreni, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
+    { id: 'Pneumatici', label: 'Pressione', icon: IconPneumatici, color: 'text-amber-500', bg: 'bg-amber-50', border: 'border-amber-200' },
   ];
 
   const handleSend = async () => {
@@ -518,6 +604,25 @@ const ReportModal = ({ onClose, onSave }) => {
                 ))}
               </div>
            </div>
+
+           {/* Sezione specifica per Spia Accesa */}
+           {category === 'Spia Accesa' && (
+                <div className="mb-4 animate-in fade-in slide-in-from-top-2">
+                    <label className="block text-xs font-bold text-red-500 uppercase mb-2 ml-1">Quale spia vedi?</label>
+                    <div className="grid grid-cols-3 gap-2">
+                        {warningLights.map((light) => (
+                            <button 
+                                key={light.id} 
+                                onClick={() => setNotes(`Spia accesa: ${light.label}`)}
+                                className={`p-2 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all active:scale-95 bg-white border-gray-100 hover:bg-gray-50 ${notes.includes(light.label) ? `ring-2 ring-red-400 ${light.bg}` : ''}`}
+                            >
+                                <light.icon className={`w-8 h-8 ${light.color}`} />
+                                <span className="text-[10px] font-bold text-gray-600 text-center leading-tight mt-1">{light.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+           )}
            
            <div>
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Descrizione Dettagliata</label>
