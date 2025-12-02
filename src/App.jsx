@@ -388,99 +388,7 @@ const VehicleHistoryModal = ({ targa, onClose }) => {
   );
 };
 
-const NFCScanner = ({ onRead, onCancel }) => {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-        if(navigator.vibrate) navigator.vibrate([50]);
-        onRead('AA 123 BB'); 
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    <div className="fixed inset-0 z-[60] bg-black/90 flex flex-col items-center justify-center p-6">
-      <div className="bg-white w-full max-w-sm rounded-3xl p-8 text-center relative">
-        <button onClick={onCancel} className="absolute top-4 right-4 p-2 bg-gray-100 rounded-full"><X size={20}/></button>
-        <div className="mx-auto w-20 h-20 rounded-full flex items-center justify-center mb-6 bg-blue-100 text-blue-600">
-           <Wifi size={40} className="rotate-90 animate-pulse" />
-        </div>
-        <h3 className="text-xl font-bold text-gray-900">Avvicina al Tag NFC</h3>
-        <p className="text-gray-500 text-sm mt-2">Simulazione in corso...</p>
-      </div>
-    </div>
-  );
-};
-
-const BarcodeScanner = ({ onScan, onClose }) => {
-  const videoRef = useRef(null);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    let stream = null;
-    let interval = null;
-
-    const startCamera = async () => {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { 
-                facingMode: { exact: "environment" } 
-            } 
-        }).catch(() => {
-             return navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        });
-        
-        if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            videoRef.current.setAttribute('playsinline', 'true'); 
-        }
-
-        if ('BarcodeDetector' in window) {
-            // @ts-ignore
-            const barcodeDetector = new window.BarcodeDetector({
-                formats: ['code_128', 'code_39', 'ean_13', 'ean_8', 'qr_code']
-            });
-            interval = setInterval(async () => {
-                if (videoRef.current) {
-                    try {
-                        const barcodes = await barcodeDetector.detect(videoRef.current);
-                        if (barcodes.length > 0) {
-                            onScan(barcodes[0].rawValue);
-                        }
-                    } catch (err) {}
-                }
-            }, 500);
-        } else {
-            setTimeout(() => onScan('12345'), 2000); 
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    startCamera();
-    return () => {
-        if (stream) stream.getTracks().forEach(track => track.stop());
-        if (interval) clearInterval(interval);
-    };
-  }, []);
-  
-  return (
-    <div className="fixed inset-0 z-[60] bg-black flex flex-col items-center justify-center text-white overflow-hidden">
-       <div className="absolute top-0 w-full p-4 flex justify-between z-10 bg-gradient-to-b from-black/80 to-transparent">
-         <span className="font-bold">Scansione Badge</span>
-         <button onClick={onClose} className="p-2 bg-white/20 rounded-full"><X size={24}/></button>
-       </div>
-       <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover"/>
-       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-           <div className="w-72 h-48 border-2 border-white/50 rounded-2xl relative">
-              <div className="w-full h-0.5 bg-red-500 absolute top-1/2 animate-[scan_2s_infinite_alternate] shadow-[0_0_10px_red]"></div>
-           </div>
-       </div>
-       <div className="absolute bottom-10 w-full text-center z-10 px-4"><p className="font-bold text-lg">Inquadra il codice a barre</p></div>
-       <style>{`@keyframes scan { 0% { transform: translateY(-24px); opacity: 0.5; } 100% { transform: translateY(24px); opacity: 1; } }`}</style>
-    </div>
-  );
-};
-
+// NUOVA FUNZIONE: PIN MODAL
 const PinModal = ({ onClose }) => {
   const [pins, setPins] = useState([]);
   const [search, setSearch] = useState('');
@@ -534,6 +442,102 @@ const PinModal = ({ onClose }) => {
   );
 };
 
+const BarcodeScanner = ({ onScan, onClose }) => {
+  const videoRef = useRef(null);
+  const [error, setError] = useState('');
+  const [isNativeSupported, setIsNativeSupported] = useState(true);
+
+  useEffect(() => {
+    let stream = null;
+    let interval = null;
+
+    const startCamera = async () => {
+      try {
+        // OTTIMIZZAZIONE IOS: playsInline + facingMode object
+        stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: { exact: "environment" } // Prova prima la back camera
+            } 
+        }).catch(() => {
+             // Fallback se exact fallisce (es. desktop o alcuni android)
+             return navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        });
+        
+        if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            // Fondamentale per iOS per non andare fullscreen
+            videoRef.current.setAttribute('playsinline', 'true'); 
+        }
+
+        // Rilevamento API Nativa
+        if ('BarcodeDetector' in window) {
+            // @ts-ignore
+            const barcodeDetector = new window.BarcodeDetector({
+                formats: ['code_128', 'code_39', 'ean_13', 'ean_8', 'qr_code', 'upc_a', 'upc_e', 'codabar', 'itf']
+            });
+            interval = setInterval(async () => {
+                if (videoRef.current) {
+                    try {
+                        const barcodes = await barcodeDetector.detect(videoRef.current);
+                        if (barcodes.length > 0) {
+                            onScan(barcodes[0].rawValue);
+                        }
+                    } catch (err) {}
+                }
+            }, 500);
+        } else {
+            // Se non c'è supporto nativo (es. iOS), mostra pulsante manuale
+            setIsNativeSupported(false);
+        }
+      } catch (err) {
+        console.error(err);
+        setIsNativeSupported(false);
+      }
+    };
+    startCamera();
+    return () => {
+        if (stream) stream.getTracks().forEach(track => track.stop());
+        if (interval) clearInterval(interval);
+    };
+  }, []);
+  
+  return (
+    <div className="fixed inset-0 z-[60] bg-black flex flex-col items-center justify-center text-white overflow-hidden">
+       <div className="absolute top-0 w-full p-4 flex justify-between z-10 bg-gradient-to-b from-black/80 to-transparent">
+         <span className="font-bold">Scansione Badge</span>
+         <button onClick={onClose} className="p-2 bg-white/20 rounded-full"><X size={24}/></button>
+       </div>
+       
+       <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover"/>
+       
+       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+           <div className="w-72 h-48 border-2 border-white/50 rounded-2xl relative">
+              <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-green-500 -mt-1 -ml-1 rounded-tl-lg"></div>
+              <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-green-500 -mt-1 -mr-1 rounded-tr-lg"></div>
+              <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-green-500 -mb-1 -ml-1 rounded-bl-lg"></div>
+              <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-green-500 -mb-1 -mr-1 rounded-br-lg"></div>
+              <div className="w-full h-0.5 bg-red-500 absolute top-1/2 -translate-y-1/2 animate-[scan_2s_infinite_alternate] shadow-[0_0_10px_red]"></div>
+           </div>
+       </div>
+       
+       {!isNativeSupported && (
+          <div className="absolute bottom-20 z-20 w-full flex justify-center">
+              <button onClick={() => onScan('12345')} className="bg-white text-black px-6 py-4 rounded-full font-bold shadow-xl flex items-center gap-2 active:scale-95 transition-transform">
+                 <Camera size={24} className="text-blue-600"/> 
+                 <div className="text-left leading-none">
+                    <span className="block text-sm">Scatta / Simula Lettura</span>
+                    <span className="text-[10px] text-gray-500">iOS non supporta la lettura nativa</span>
+                 </div>
+              </button>
+          </div>
+       )}
+
+       <div className="absolute bottom-8 w-full text-center z-10 px-4 opacity-80"><p className="font-bold text-lg">Inquadra il codice a barre</p></div>
+       <style>{`@keyframes scan { 0% { transform: translateY(-24px); opacity: 0.5; } 100% { transform: translateY(24px); opacity: 1; } }`}</style>
+    </div>
+  );
+};
+
 const RefuelingModal = ({ onClose, onSave, initialData }) => {
   const [stations, setStations] = useState([]);
   const [formData, setFormData] = useState(initialData || { id: Date.now(), importo: '', litri: '', tessera: '', impianto: '' });
@@ -541,6 +545,7 @@ const RefuelingModal = ({ onClose, onSave, initialData }) => {
   useEffect(() => { apiFetchStations().then(data => { setStations(data); }); }, []);
 
   const handleSave = () => {
+      // MIGLIORIA 2: Validazione tutti i campi
       if (!formData.importo || !formData.litri || !formData.tessera || !formData.impianto) {
           showCustomAlert("Errore", "Compilare tutti i campi per salvare.", "warning");
           return;
@@ -1038,7 +1043,7 @@ const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel, onUpdateFuel }) 
                     autoFocus 
                     placeholder="000000"
                  />
-                 {isKmError && <p className="text-red-500 text-xs mt-2 font-bold animate-pulse">Verifica il contachilometri</p>}
+                 {isKmError && <p className="text-red-500 text-xs mt-2 font-bold animate-pulse">Valore inferiore alla partenza!</p>}
               </div>
           ) : (
               <div className="space-y-4 animate-in fade-in slide-in-from-right-8">
@@ -1084,7 +1089,6 @@ const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel, onUpdateFuel }) 
                                         <div className="text-right">
                                             <span className="block font-bold text-gray-900">€ {log.importo}</span>
                                             <span className="text-gray-500">{log.litri} L</span>
-                                            <button onClick={() => openFuelModal(log)} className="ml-2 p-1 bg-blue-50 rounded text-blue-600"><Edit2 size={12}/></button>
                                         </div>
                                     </div>
                                 ))}
@@ -1099,7 +1103,7 @@ const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel, onUpdateFuel }) 
                       
                       <Button 
                         variant="warning" 
-                        onClick={() => openFuelModal(null)} 
+                        onClick={() => setShowFuelModal(true)} 
                         icon={Fuel}
                         className="text-xs py-3 shadow-none border-2 border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100"
                       >
