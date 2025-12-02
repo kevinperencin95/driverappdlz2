@@ -4,7 +4,7 @@ import {
   Truck, Navigation, Fuel, User, LogOut, Camera, X, Check, Clock, 
   Wifi, ChevronDown, Lock, Droplet, CreditCard, ArrowRight, 
   AlertTriangle, RefreshCw, History, Users, Calendar, AlertOctagon, 
-  FileText, QrCode, CheckCircle, Smartphone, ScanLine
+  FileText, QrCode, CheckCircle, Smartphone, ScanLine, Edit2, MapPin
 } from 'lucide-react';
 
 // ==========================================================================================
@@ -105,7 +105,7 @@ const apiCheckRemoteUpdates = async (driverName) => {
   try {
     const res = await fetchWithRetry(`${API_URL}?action=checkRemoteStart&driverName=${driverName}`);
     return await res.json();
-  } catch (error) { return { found: false }; }
+  } catch (error) { throw error; } // Propagate error for network check
 };
 
 const apiStartShift = async (shiftData) => {
@@ -351,9 +351,8 @@ const BarcodeScanner = ({ onScan, onClose }) => {
             videoRef.current.srcObject = stream;
         }
 
-        // Feature detection: Check if BarcodeDetector API is supported
         if ('BarcodeDetector' in window) {
-            // @ts-ignore - Ignore TS error for experimental API if using Typescript
+            // @ts-ignore
             const barcodeDetector = new window.BarcodeDetector({
                 formats: ['code_128', 'code_39', 'ean_13', 'ean_8', 'qr_code', 'upc_a', 'upc_e']
             });
@@ -369,14 +368,10 @@ const BarcodeScanner = ({ onScan, onClose }) => {
                                 onScan(code);
                             }
                         }
-                    } catch (err) {
-                        // Detection error (often frame not ready), ignore
-                    }
+                    } catch (err) {}
                 }
             }, 500);
         } else {
-            // Fallback for browsers without native Barcode Detection (e.g. Firefox, older iOS)
-            // We simulate a scan after a delay to allow the user to proceed in the demo
             setError('Rilevamento nativo non supportato. Simulo scansione...');
             setTimeout(() => {
                 if (navigator.vibrate) navigator.vibrate(200);
@@ -403,23 +398,14 @@ const BarcodeScanner = ({ onScan, onClose }) => {
          <button onClick={onClose} className="p-2 bg-white/20 rounded-full"><X size={24}/></button>
        </div>
        
-       {/* Camera View */}
-       <video 
-         ref={videoRef} 
-         autoPlay 
-         playsInline 
-         muted 
-         className="w-full h-full object-cover"
-       />
+       <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover"/>
        
-       {/* Scanner Overlay */}
        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
            <div className="w-72 h-48 border-2 border-white/50 rounded-2xl relative">
               <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-green-500 -mt-1 -ml-1 rounded-tl-lg"></div>
               <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-green-500 -mt-1 -mr-1 rounded-tr-lg"></div>
               <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-green-500 -mb-1 -ml-1 rounded-bl-lg"></div>
               <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-green-500 -mb-1 -mr-1 rounded-br-lg"></div>
-              
               <div className="w-full h-0.5 bg-red-500 absolute top-1/2 -translate-y-1/2 animate-[scan_2s_infinite_alternate] shadow-[0_0_10px_red]"></div>
            </div>
        </div>
@@ -428,13 +414,7 @@ const BarcodeScanner = ({ onScan, onClose }) => {
           <p className="font-bold text-lg mb-1">Inquadra il codice a barre</p>
           {error && <p className="text-xs text-orange-300 bg-black/50 p-2 rounded">{error}</p>}
        </div>
-
-       <style>{`
-          @keyframes scan {
-              0% { transform: translateY(-50%) translateY(-24px); opacity: 0.5; }
-              100% { transform: translateY(-50%) translateY(24px); opacity: 1; }
-          }
-       `}</style>
+       <style>{`@keyframes scan { 0% { transform: translateY(-50%) translateY(-24px); opacity: 0.5; } 100% { transform: translateY(-50%) translateY(24px); opacity: 1; } }`}</style>
     </div>
   );
 };
@@ -484,12 +464,27 @@ const LoginScreen = ({ onLogin }) => {
   const [imgError, setImgError] = useState(false);
 
   const performLogin = async (code) => {
-    if(!code) return;
+    if(!code || loading) return;
     setLoading(true);
-    const res = await apiFetchDriverName(code);
-    setLoading(false);
-    if(res.success) onLogin({ matricola: code, name: res.name });
-    else showCustomAlert('Errore Login', 'Matricola non trovata.', 'danger');
+    
+    try {
+        // 1. Verifica Nome Autista
+        const res = await apiFetchDriverName(code);
+        
+        if(res.success) {
+            // 2. Se OK, passa alla gestione login (che controlla remote updates)
+            // NON spegniamo il loading qui, per evitare il "freeze" visivo.
+            await onLogin({ matricola: code, name: res.name });
+            // Se il componente viene smontato, bene. Se no, potrebbe rimanere loading=true
+            // ma in uno scenario felice, LoginScreen viene rimpiazzato.
+        } else {
+            setLoading(false);
+            showCustomAlert('Errore Login', 'Matricola non trovata.', 'danger');
+        }
+    } catch (e) {
+        setLoading(false);
+        showCustomAlert('Errore di Rete', 'Impossibile connettersi.', 'danger');
+    }
   };
 
   return (
@@ -510,16 +505,17 @@ const LoginScreen = ({ onLogin }) => {
         <p className="text-slate-400 text-center mb-8">Accesso Autisti</p>
 
         <div className="bg-white rounded-3xl p-6 shadow-xl">
-           <Button onClick={() => setShowScanner(true)} className="mb-6" icon={Camera}>Scansiona Badge</Button>
+           <Button onClick={() => setShowScanner(true)} disabled={loading} className="mb-6" icon={Camera}>Scansiona Badge</Button>
            <div className="text-center text-xs text-gray-400 font-bold uppercase mb-4 border-t pt-4">Oppure manuale</div>
            <div className="flex gap-2">
              <input className="w-full bg-gray-100 rounded-xl p-4 font-bold text-center text-lg outline-none focus:ring-2 focus:ring-blue-500" 
                     placeholder="Matricola" 
                     type="number"
                     value={matricola} 
-                    onChange={e => setMatricola(e.target.value)} 
+                    onChange={e => setMatricola(e.target.value)}
+                    disabled={loading}
              />
-             <button onClick={() => performLogin(matricola)} disabled={loading} className="bg-blue-600 text-white rounded-xl px-6 font-bold disabled:opacity-50">
+             <button onClick={() => performLogin(matricola)} disabled={loading || !matricola} className="bg-blue-600 text-white rounded-xl px-6 font-bold disabled:opacity-50">
                {loading ? <RefreshCw className="animate-spin"/> : <ArrowRight/>}
              </button>
            </div>
@@ -529,7 +525,7 @@ const LoginScreen = ({ onLogin }) => {
   );
 };
 
-const StartShiftScreen = ({ user, onStart }) => {
+const StartShiftScreen = ({ user, onStart, onLogout }) => {
   const [targa, setTarga] = useState('');
   const [km, setKm] = useState('');
   const [vehicles, setVehicles] = useState([]);
@@ -563,7 +559,10 @@ const StartShiftScreen = ({ user, onStart }) => {
 
       <div className="bg-white p-6 shadow-sm border-b flex justify-between items-center">
          <div><h2 className="text-xl font-bold">Ciao,</h2><p className="text-blue-600 font-black">{user.name}</p></div>
-         <div className="bg-blue-50 p-3 rounded-full"><User className="text-blue-600"/></div>
+         <div className="flex items-center gap-2">
+            <div className="bg-blue-50 p-2 rounded-full"><User className="text-blue-600" size={20}/></div>
+            <button onClick={onLogout} className="bg-gray-100 p-2 rounded-full hover:bg-red-50 text-gray-500 hover:text-red-500 transition-colors"><LogOut size={20}/></button>
+         </div>
       </div>
 
       <div className="flex-1 p-6 overflow-y-auto">
@@ -612,7 +611,7 @@ const StartShiftScreen = ({ user, onStart }) => {
   );
 };
 
-const ActiveShiftScreen = ({ session, onEndShift, onAddFuel }) => {
+const ActiveShiftScreen = ({ session, onEndShift, onAddFuel, onLogout }) => {
   const [time, setTime] = useState("00:00:00");
   const [showFuel, setShowFuel] = useState(false);
 
@@ -629,10 +628,18 @@ const ActiveShiftScreen = ({ session, onEndShift, onAddFuel }) => {
       {showFuel && <RefuelingModal onClose={() => setShowFuel(false)} onSave={d => { apiLogFuel(session, d); onAddFuel(d); }} />}
       
       <div className="bg-slate-900 text-white p-8 rounded-b-[2.5rem] shadow-xl relative overflow-hidden">
+         <button 
+            onClick={onLogout} 
+            className="absolute top-6 right-6 z-20 p-2 bg-white/10 rounded-full hover:bg-red-500/20 text-white/50 hover:text-white transition-colors"
+            title="Logout"
+         >
+            <LogOut size={20}/>
+         </button>
+
          <div className="relative z-10">
             <div className="flex justify-between items-start mb-6">
                <span className="bg-green-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase animate-pulse">In Corso</span>
-               <div className="text-right"><p className="text-xs opacity-50">Driver</p><p className="font-bold">{session.user.name}</p></div>
+               <div className="text-right pr-8"><p className="text-xs opacity-50">Driver</p><p className="font-bold">{session.user.name}</p></div>
             </div>
             <h2 className="text-4xl font-black mb-6">{session.targa}</h2>
             <div className="grid grid-cols-2 gap-4">
@@ -657,24 +664,49 @@ const ActiveShiftScreen = ({ session, onEndShift, onAddFuel }) => {
   );
 };
 
-const EndShiftScreen = ({ session, onSave, onCancel }) => {
+const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel }) => {
   const [km, setKm] = useState('');
+  const [step, setStep] = useState('INPUT'); // 'INPUT' | 'SUMMARY'
   const [saving, setSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showFuelModal, setShowFuelModal] = useState(false);
+
+  // Calcoli per il riepilogo
+  const totalKm = km ? (parseInt(km) - session.startKm) : 0;
+  const totalFuelCost = session.fuelLogs.reduce((acc, f) => acc + parseFloat(f.importo), 0);
+  const totalLiters = session.fuelLogs.reduce((acc, f) => acc + parseFloat(f.litri), 0);
+  const isKmError = parseInt(km) < session.startKm;
+
+  const handleNext = () => {
+     if(!km) return showCustomAlert("Errore", "Inserisci KM finali", "warning");
+     if(isKmError) {
+         if(!window.confirm(`ATTENZIONE: KM finali (${km}) minori di quelli iniziali (${session.startKm}). Vuoi procedere comunque?`)) return;
+     }
+     setStep('SUMMARY');
+  };
+
+  const handleFuelSaveLocal = (data) => {
+      apiLogFuel(session, data); // API fire and forget
+      onAddFuel(data); // Aggiorna stato locale (così appare subito nel riepilogo)
+      setShowFuelModal(false);
+  };
 
   const handleSave = async () => {
-     if(!km) return showCustomAlert("Errore", "Inserisci KM finali", "warning");
      setSaving(true);
      const endKm = parseInt(km);
      
      // Call API
-     const result = await apiSaveLog({ ...session, end: endKm, totalKm: endKm - session.startKm });
+     const result = await apiSaveLog({ 
+         ...session, 
+         end: endKm, 
+         totalKm: endKm - session.startKm,
+         anomaly: isKmError || session.anomaly 
+     });
      
      setSaving(false);
      
      if(result && result.success) {
         setShowSuccess(true);
-        // Wait 3 seconds before redirection
         setTimeout(() => {
             onSave();
         }, 3000);
@@ -697,21 +729,110 @@ const EndShiftScreen = ({ session, onSave, onCancel }) => {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-       <div className="bg-white p-6 shadow-sm border-b"><h2 className="text-xl font-black">Chiusura Turno</h2></div>
-       <div className="flex-1 p-6">
-          <div className="bg-white p-8 rounded-3xl shadow-lg border text-center mb-6">
-             <p className="text-xs text-blue-600 font-bold uppercase mb-2">KM Partenza</p>
-             <p className="text-3xl font-mono font-black text-blue-900 mb-8">{session.startKm}</p>
-             
-             <label className="block text-xs font-bold text-gray-400 uppercase mb-4">Inserisci KM Arrivo</label>
-             <input type="number" value={km} onChange={e => setKm(e.target.value)} className="w-full text-center text-5xl font-black border-b-4 border-blue-500 pb-2 bg-transparent outline-none" autoFocus placeholder="000000"/>
-          </div>
+       {showFuelModal && <RefuelingModal onClose={() => setShowFuelModal(false)} onSave={handleFuelSaveLocal} />}
+       <div className="bg-white p-6 shadow-sm border-b"><h2 className="text-xl font-black">{step === 'INPUT' ? 'Chiusura Turno' : 'Riepilogo Dati'}</h2></div>
+       
+       <div className="flex-1 p-6 overflow-y-auto">
+          {step === 'INPUT' ? (
+              <div className="bg-white p-8 rounded-3xl shadow-lg border text-center mb-6 animate-in fade-in slide-in-from-bottom-4">
+                 <p className="text-xs text-blue-600 font-bold uppercase mb-2">KM Partenza</p>
+                 <p className="text-3xl font-mono font-black text-blue-900 mb-8">{session.startKm}</p>
+                 
+                 <label className="block text-xs font-bold text-gray-400 uppercase mb-4">Inserisci KM Arrivo</label>
+                 <input 
+                    type="number" 
+                    value={km} 
+                    onChange={e => setKm(e.target.value)} 
+                    className="w-full text-center text-5xl font-black border-b-4 border-blue-500 pb-2 bg-transparent outline-none transition-all focus:border-blue-700" 
+                    autoFocus 
+                    placeholder="000000"
+                 />
+              </div>
+          ) : (
+              <div className="space-y-4 animate-in fade-in slide-in-from-right-8">
+                  {/* Vehicle Info Card */}
+                  <div className="bg-blue-600 p-4 rounded-3xl shadow-lg text-white flex items-center gap-4">
+                      <div className="bg-white/20 p-3 rounded-2xl"><Truck size={24}/></div>
+                      <div>
+                          <p className="text-xs opacity-70 uppercase font-bold tracking-wider">Veicolo in uso</p>
+                          <p className="text-2xl font-black tracking-tight">{session.targa}</p>
+                      </div>
+                  </div>
+
+                  <div className="bg-white p-6 rounded-3xl shadow-sm border">
+                      <div className="grid grid-cols-2 gap-4 mb-4 border-b pb-4">
+                          <div><p className="text-xs text-gray-400 font-bold uppercase">Inizio</p><p className="text-xl font-mono font-bold">{session.startKm}</p></div>
+                          <div className="text-right"><p className="text-xs text-gray-400 font-bold uppercase">Fine</p><p className="text-xl font-mono font-bold text-blue-600">{km}</p></div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                          <span className="font-bold text-gray-800">KM Totali</span>
+                          <span className="text-2xl font-black text-blue-600">{totalKm} km</span>
+                      </div>
+                      {isKmError && <p className="mt-2 text-xs text-red-500 font-bold bg-red-50 p-2 rounded flex items-center gap-1"><AlertTriangle size={12}/> Attenzione: KM finali minori!</p>}
+                  </div>
+
+                  <div className="bg-white p-6 rounded-3xl shadow-sm border">
+                      <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2"><Fuel size={16} className="text-orange-500"/> Carburante</h3>
+                      {session.fuelLogs.length > 0 ? (
+                          <>
+                            <div className="flex justify-between text-sm mb-4 bg-orange-50 p-3 rounded-xl border border-orange-100">
+                                <span>Rifornimenti: <b>{session.fuelLogs.length}</b></span>
+                                <span>Totale: <b>€ {totalFuelCost.toFixed(2)}</b></span>
+                            </div>
+                            <div className="space-y-2 mb-4">
+                                {session.fuelLogs.map((log, idx) => (
+                                    <div key={idx} className="flex justify-between items-center text-xs p-2 bg-gray-50 rounded-lg border border-gray-100">
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-white p-1 rounded border border-gray-200"><MapPin size={10} className="text-gray-400"/></div>
+                                            <div>
+                                                <span className="font-bold text-gray-700 block">{log.impianto}</span>
+                                                <span className="text-[10px] text-gray-500 flex items-center gap-1"><CreditCard size={10}/> Tessera: {log.tessera}</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="block font-bold text-gray-900">€ {log.importo}</span>
+                                            <span className="text-gray-500">{log.litri} L</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                          </>
+                      ) : (
+                          <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 mb-4 animate-pulse">
+                              <p className="text-sm font-bold text-orange-800 mb-1 flex items-center gap-2"><AlertTriangle size={14}/> Hai fatto rifornimento?</p>
+                              <p className="text-xs text-orange-600">Non risultano rifornimenti. Se hai fatto carburante, inseriscilo ora.</p>
+                          </div>
+                      )}
+                      
+                      <Button 
+                        variant="warning" 
+                        onClick={() => setShowFuelModal(true)} 
+                        icon={Fuel}
+                        className="text-xs py-3 shadow-none border-2 border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100"
+                      >
+                        {session.fuelLogs.length === 0 ? "Sì, Aggiungi Rifornimento" : "Aggiungi Altro Rifornimento"}
+                      </Button>
+                  </div>
+              </div>
+          )}
        </div>
-       <div className="p-6 bg-white border-t flex gap-4">
-          <button onClick={onCancel} className="flex-1 font-bold text-gray-400">Annulla</button>
-          <div className="flex-[2]">
-             <Button onClick={handleSave} loading={saving} variant="success" icon={Check}>Conferma</Button>
-          </div>
+
+       <div className="p-6 bg-white border-t flex gap-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          {step === 'INPUT' ? (
+             <>
+               <button onClick={onCancel} className="flex-1 font-bold text-gray-400 hover:text-gray-600 transition-colors">Annulla</button>
+               <div className="flex-[2]">
+                  <Button onClick={handleNext} icon={ArrowRight}>Avanti</Button>
+               </div>
+             </>
+          ) : (
+             <>
+               <button onClick={() => setStep('INPUT')} className="flex-1 font-bold text-gray-400 hover:text-gray-600 transition-colors flex items-center justify-center gap-1"><Edit2 size={16}/> Modifica</button>
+               <div className="flex-[2]">
+                  <Button onClick={handleSave} loading={saving} variant="success" icon={Check}>Conferma e Invia</Button>
+               </div>
+             </>
+          )}
        </div>
     </div>
   );
@@ -740,7 +861,95 @@ export default function App() {
     }
   }, []);
 
-  const handleLogin = (u) => { setUser(u); setView('START'); };
+  const handleLogin = async (u) => { 
+    setUser(u); 
+    
+    // 1. Variabili per la logica
+    let remoteData = null;
+    let localSession = null;
+    let isNetworkError = false;
+
+    // 2. Controllo Remoto (Prioritario)
+    try {
+        const remoteCheck = await apiCheckRemoteUpdates(u.name);
+        if (remoteCheck && remoteCheck.found) {
+             const checkDate = remoteCheck.date ? new Date(remoteCheck.date) : new Date();
+             const today = new Date();
+             const isToday = checkDate.getDate() === today.getDate() &&
+                            checkDate.getMonth() === today.getMonth() &&
+                            checkDate.getFullYear() === today.getFullYear();
+             
+             if (isToday) {
+                 remoteData = remoteCheck;
+             }
+        }
+    } catch (e) {
+        console.error("Network error checking remote", e);
+        isNetworkError = true;
+    }
+
+    // 3. Recupero Sessione Locale
+    const saved = localStorage.getItem('driver_session_v2');
+    if(saved) {
+        try {
+            const s = JSON.parse(saved);
+            if(s && s.user && s.user.matricola === u.matricola) {
+                localSession = s;
+                localSession.startTime = new Date(localSession.startTime); // Fix Date obj
+            }
+        } catch(e) {}
+    }
+
+    // 4. Logica di Decisione
+    
+    // CASO A: Errore di Rete -> Mi fido del locale se esiste
+    if (isNetworkError) {
+        if (localSession) {
+            setActiveSession(localSession);
+            setView('ACTIVE');
+        } else {
+            setView('START');
+        }
+        return;
+    }
+
+    // CASO B: Esiste un record remoto valido per oggi
+    if (remoteData) {
+        // Allineo l'app al server (Sync)
+        const remoteSession = { 
+            targa: remoteData.targa, 
+            startKm: remoteData.startKm, 
+            // Mantengo orario locale se esiste, altrimenti resetto a ora
+            startTime: localSession ? localSession.startTime : new Date(), 
+            user: u, 
+            // Mantengo log carburante locali se esistono
+            fuelLogs: localSession ? localSession.fuelLogs : [], 
+            anomaly: false,
+            isRemote: true
+        };
+        
+        setActiveSession(remoteSession);
+        localStorage.setItem('driver_session_v2', JSON.stringify(remoteSession));
+        setView('ACTIVE');
+        
+        if (!localSession) {
+             showCustomAlert("Turno Recuperato", `Trovato turno attivo per ${remoteData.targa}.`, "success");
+        } else if (localSession.targa !== remoteData.targa || localSession.startKm !== remoteData.startKm) {
+             showCustomAlert("Sincronizzazione", `Dati aggiornati dall'ufficio.`, "info");
+        }
+    } 
+    // CASO C: Nessun record remoto (o cancellato)
+    else {
+        // Se avevo un locale, significa che è obsoleto o cancellato dall'ufficio
+        if (localSession) {
+            localStorage.removeItem('driver_session_v2');
+            setActiveSession(null);
+            showCustomAlert("Reset Turno", "Il turno precedente non risulta valido. Inizia un nuovo turno.", "warning");
+        }
+        // In ogni caso, vado a START
+        setView('START');
+    }
+  };
   
   const handleStart = (data) => {
      const session = { ...data, user };
@@ -762,13 +971,20 @@ export default function App() {
      setView('LOGIN'); // Torna al login o START a scelta
   };
 
+  // Logout funzione che resetta solo lo stato UI ma non il localStorage se c'è un turno attivo
+  const handleLogout = () => {
+    setUser(null);
+    setActiveSession(null);
+    setView('LOGIN');
+  };
+
   return (
     <CustomAlertProvider>
       <div className="w-full max-w-md mx-auto h-screen bg-white shadow-2xl overflow-hidden font-sans text-gray-900 relative">
         {view === 'LOGIN' && <LoginScreen onLogin={handleLogin} />}
-        {view === 'START' && <StartShiftScreen user={user} onStart={handleStart} />}
-        {view === 'ACTIVE' && <ActiveShiftScreen session={activeSession} onEndShift={() => setView('END')} onAddFuel={handleAddFuel} />}
-        {view === 'END' && <EndShiftScreen session={activeSession} onSave={handleEnd} onCancel={() => setView('ACTIVE')} />}
+        {view === 'START' && <StartShiftScreen user={user} onStart={handleStart} onLogout={handleLogout} />}
+        {view === 'ACTIVE' && <ActiveShiftScreen session={activeSession} onEndShift={() => setView('END')} onAddFuel={handleAddFuel} onLogout={handleLogout} />}
+        {view === 'END' && <EndShiftScreen session={activeSession} onSave={handleEnd} onCancel={() => setView('ACTIVE')} onAddFuel={handleAddFuel} />}
       </div>
     </CustomAlertProvider>
   );
