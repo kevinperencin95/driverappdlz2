@@ -5,7 +5,7 @@ import {
   Wifi, ChevronDown, Lock, Droplet, CreditCard, ArrowRight, 
   AlertTriangle, RefreshCw, History, Users, Calendar, AlertOctagon, 
   FileText, QrCode, CheckCircle, Smartphone, ScanLine, Edit2, MapPin,
-  Wrench, AlertCircle, Disc, HelpCircle, Info
+  Wrench, AlertCircle, Disc, HelpCircle, Info, Search, Hash
 } from 'lucide-react';
 
 // ==========================================================================================
@@ -16,50 +16,49 @@ const API_URL = "https://script.google.com/macros/s/AKfycbz8mQgiROz0RkNHE5gSbUky
 // ==========================================================================================
 // --- ICONE SPIE REALI (ISO STANDARD - SVG INLINE) ---
 // ==========================================================================================
-// Queste icone sono disegnate per replicare esattamente i simboli del cruscotto.
+// Queste icone sono disegnate per replicare esattamente i simboli standard del cruscotto.
 
 const IconMotore = ({ className }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M22,7h-3l-1.3-2.6C17.2,3.5,16.1,3,15,3h-6c-1.1,0-2.2,0.5-2.7,1.4L5,7H2v4h2v6h2v-6h1v6h2v-6h6v6h2v-6h1v6h2 v-6h2V7z M6,7l1-2h10l1,2H6z M10,9h4v3h-4V9z"/>
+    <path d="M19 5h-2V3h-2v2h-2V3h-2v2H9V3H7v2H5v4l-1.4 1.4L5 11.8V19h14v-7.2l1.4-1.4L19 9V5zM8 14h2v2H8v-2zm6 2h-2v-2h2v2z" />
+    <path d="M4,10 h1 v5 h-1 z M20,10 h1 v5 h-1 z"/>
   </svg>
 );
 
 const IconOlio = ({ className }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M22,5.5l-2.9,1.6c-0.2,0.1-0.5,0.2-0.7,0.2c-0.5,0-1-0.2-1.4-0.6l-1.5-1.5H9C6.8,5.2,5,7,5,9.2v2.1 c0,1.9,1.3,3.6,3.2,4.1l8.6,2.2c0.2,0,0.3,0.1,0.5,0.1c1.2,0,2.2-1,2.2-2.2V9.8L22,8.4C22.6,8.1,22.8,7.3,22.5,6.7 C22.2,6.1,21.6,6,21.6,6L22,5.5z M20,20.8c-0.6,0-1-0.4-1-1c0-0.6,0.4-1,1-1s1,0.4,1,1C21,20.3,20.6,20.8,20,20.8z M4,15H2v2h2V15z"/>
+    <path d="M19,15c0,2.8-2.2,5-5,5H7c-2.2,0-4-1.8-4-4v-1.4l2.8-7.6l0.9-0.3C7.3,6.5,7.9,6.4,8.5,6.5l0.6-3.5h2.4v2.1h3.8L18,11.4 C18.6,12.5,19,13.7,19,15z M20.5,3c-0.8,0-1.5,0.7-1.5,1.5c0,0.3,0.1,0.5,0.2,0.7l2.1,2.5l2.1-2.5C23.4,5,23.5,4.8,23.5,4.5 C23.5,3.7,22.8,3,20.5,3z"/>
   </svg>
 );
 
 const IconBatteria = ({ className }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M17,5v2h-2V5h-2v2h-2V5H9v2H7V5H5v14h14V5H17z M8,13H6v-2h2V13z M18,13h-2v2h-2v-2h-2v-2h2V9h2v2h2V13z"/>
+    <path d="M16,4h-1V2h-2v2H9v2H8C6.9,6,6,6.9,6,8v12c0,1.1,0.9,2,2,2h8c1.1,0,2-0.9,2-2V8c0-1.1-0.9-2-2-2h-1V4z M10,14H8v-2h2V14z M16,14h-4v-2h4V14z"/>
+    <rect x="9" y="9" width="6" height="2" fill="white" opacity="0.3"/>
   </svg>
 );
 
 const IconTemperatura = ({ className }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M8,17v-2h8v2H8z M8,13v-2h8v2H8z M12,2c-2.2,0-4,1.8-4,4v7.2c-1.2,0.9-2,2.4-2,4c0,2.8,2.2,5,5,5s5-2.2 5-5 c0-1.6-0.8-3.1-2-4V6C16,3.8,14.2,2,12,2z"/>
-    <path d="M4,17v2h3v-2H4z M17,17v2h3v-2H17z M3,12v2h3v-2H3z M18,12v2h3v-2H18z"/>
+    <path d="M12.5,11.1V6c0-1.7-1.3-3-3-3s-3,1.3-3,3v5.1c-1.3,0.9-2,2.4-2,4c0,2.8,2.2,5,5,5s5-2.2,5-5C14.5,13.5,13.8,12,12.5,11.1z M10.5,6c0-0.6,0.4-1,1-1s1,0.4,1,1v3h-2V6z"/>
+    <path d="M16.8,17c0.6,0,1.1-0.2,1.5-0.6l1.1,1.1c-0.7,0.7-1.6,1.1-2.6,1.1s-2-0.4-2.6-1.1l1.1-1.1C15.7,16.8,16.2,17,16.8,17z M16.8,13c0.6,0,1.1-0.2,1.5-0.6l1.1,1.1c-0.7,0.7-1.6,1.1-2.6,1.1s-2-0.4-2.6-1.1l1.1-1.1C15.7,12.8,16.2,13,16.8,13z M5.2,17c-0.6,0-1.1-0.2-1.5-0.6l-1.1,1.1c0.7,0.7,1.6,1.1,2.6,1.1s2-0.4,2.6-1.1l-1.1-1.1C6.3,16.8,5.8,17,5.2,17z M5.2,13c-0.6,0-1.1-0.2-1.5-0.6l-1.1,1.1c0.7,0.7,1.6,1.1,2.6,1.1s2-0.4,2.6-1.1l-1.1-1.1C6.3,12.8,5.8,13,5.2,13z"/>
   </svg>
 );
 
 const IconFreni = ({ className }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M12,2C6.5,2,2,6.5,2,12s4.5,10,10,10s10-4.5,10-10S17.5,2,12,2z M12,20c-4.4,0-8-3.6-8-8s3.6-8,8-8s8,3.6,8,8 S16.4,20,12,20z"/>
-    <circle cx="12" cy="12" r="6" fill="transparent" stroke="currentColor" strokeWidth="2" />
+    <circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" strokeWidth="2"/>
     <path d="M11,8h2v5h-2V8z M11,15h2v2h-2V15z"/>
-    <path d="M5.5,6.5C4,8,3,10,3,12s1,4,2.5,5.5" fill="none" stroke="currentColor" strokeWidth="2" />
-    <path d="M18.5,6.5C20,8,21,10,21,12s-1,4-2.5,5.5" fill="none" stroke="currentColor" strokeWidth="2" />
+    <path d="M4,12c0-3.3,2-6.2,5-7.4L8.3,3C4.2,4.6,1.5,8.4,1.5,12.9c0,4.4,2.7,8.2,6.8,9.9l0.7-1.6C6,19.9,4,16.5,4,12z"/>
+    <path d="M20,12c0,3.3-2,6.2-5,7.4l0.7,1.6c4.1-1.7,6.8-5.4,6.8-9.9c0-4.4-2.7-8.2-6.8-9.9l-0.7,1.6C18,5.8,20,9.1,20,12z"/>
   </svg>
 );
 
 const IconPneumatici = ({ className }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M17.5,5c-0.6,0-1.1,0.3-1.4,0.8L12,12.2L7.9,5.8C7.6,5.3,7.1,5,6.5,5C5.7,5,5,5.7,5,6.5c0,0.2,0,0.4,0.1,0.6l5.5,8.5 c0.4,0.6,1,0.9,1.7,0.8c0.6-0.1,1.1-0.5,1.4-1.1l5.7-8.9C19.8,5.7,19.2,5,18.5,5H17.5z"/>
-    <path d="M5,18v2h14v-2H5z M11,18h2v2h-2V18z"/>
-    <path d="M12,2C6.5,2,2,6.5,2,12h2c0-4.4,3.6-8,8-8s8,3.6,8,8h2C22,6.5,17.5,2,12,2z"/>
-    <rect x="11" y="8" width="2" height="5" />
-    <rect x="11" y="15" width="2" height="2" />
+    <path d="M12,5c-3.9,0-7,3.1-7,7c0,1.7,0.6,3.3,1.6,4.6l-1.6,1.2C3.6,16.2,3,14.2,3,12c0-5,4-9,9-9s9,4,9,9c0,2.2-0.6,4.2-2,5.8 l-1.6-1.2C18.4,15.3,19,13.7,19,12C19,8.1,15.9,5,12,5z"/>
+    <path d="M11,17v2h2v-2H11z M11,9h2v6h-2V9z"/>
+    <path d="M6.5,19l1.5,0l0,2l-2,0L6.5,19z M10.5,19l1.5,0l0,2l-2,0L10.5,19z M14.5,19l1.5,0l0,2l-2,0L14.5,19z"/>
   </svg>
 );
 
@@ -90,14 +89,9 @@ const MOCK_DATA = {
         { targa: 'CC 456 DD', modello: 'Iveco Daily (Demo)', lastKm: 89000, lastDriver: 'Mario R.' }
     ],
     stations: [{ id: 1, nome: 'Distributore Demo' }, { id: 2, nome: 'Stazione Ovest (Demo)' }],
-    history: [
-        { date: new Date().toISOString(), driver: 'Luca B.', km: 154200 },
-        { date: new Date(Date.now() - 86400000).toISOString(), driver: 'Giovanni C.', km: 154000 }
-    ],
-    driverHistory: [
-        { date: new Date().toISOString(), targa: 'AA 123 BB', start: 154000, end: 154200, total: 200 },
-        { date: new Date(Date.now() - 86400000 * 2).toISOString(), targa: 'CC 456 DD', start: 89000, end: 89500, total: 500 }
-    ]
+    fuelPins: [{ number: '700012345', pin: '1234' }, { number: '700067890', pin: '5678' }],
+    history: [],
+    driverHistory: []
 };
 
 const isDemoMode = () => !API_URL || API_URL.includes("INSERISCI_QUI");
@@ -112,7 +106,6 @@ const apiFetchDriverName = async (matricola) => {
     const res = await fetchWithRetry(`${API_URL}?action=getDriver&matricola=${matricola}`);
     return await res.json();
   } catch (error) {
-    console.warn("Uso dati mock per errore API Driver");
     return MOCK_DATA.drivers[matricola] ? { success: true, name: MOCK_DATA.drivers[matricola] } : { success: false, error: "Errore connessione" };
   }
 };
@@ -152,11 +145,20 @@ const apiFetchStations = async () => {
   } catch (error) { return MOCK_DATA.stations; }
 };
 
+const apiFetchFuelPins = async () => {
+  if (isDemoMode()) return MOCK_DATA.fuelPins;
+  try {
+    const res = await fetchWithRetry(`${API_URL}?action=getFuelCardPins`);
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) { return []; }
+};
+
 const apiCheckRemoteUpdates = async (driverName) => {
   try {
     const res = await fetchWithRetry(`${API_URL}?action=checkRemoteStart&driverName=${driverName}`);
     return await res.json();
-  } catch (error) { throw error; } // Propagate error for network check
+  } catch (error) { throw error; }
 };
 
 const apiStartShift = async (shiftData) => {
@@ -175,12 +177,12 @@ const apiStartShift = async (shiftData) => {
 
 const apiLogFuel = async (session, fuelData) => {
   try {
-    // FORMATTAZIONE PER GOOGLE SHEETS (ITALIANO)
-    // Sostituisce il punto con la virgola per importo e litri prima di inviare
+    // FORMATTAZIONE PER GOOGLE SHEETS (ITALIANO) e AGGIUNTA ID
     const formattedFuelData = {
         ...fuelData,
         importo: fuelData.importo ? fuelData.importo.toString().replace('.', ',') : '',
-        litri: fuelData.litri ? fuelData.litri.toString().replace('.', ',') : ''
+        litri: fuelData.litri ? fuelData.litri.toString().replace('.', ',') : '',
+        fuelId: fuelData.id // Importante per la sovrascrittura
     };
 
     const payload = {
@@ -198,11 +200,10 @@ const apiLogFuel = async (session, fuelData) => {
   }
 };
 
-// --- NUOVA FUNZIONE API: REPORT ---
 const apiReportIssue = async (session, reportData) => {
   try {
     const payload = {
-      type: 'REPORT', // Necessita gestione lato Google Script
+      type: 'REPORT',
       driver: session.user.matricola,
       driverName: session.user.name,
       targa: session.targa,
@@ -262,7 +263,7 @@ const CustomAlertProvider = ({ children }) => {
     return (
         <>
             {children}
-            <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4 animate-in fade-in">
                 <div className={`w-full max-w-xs rounded-3xl p-6 shadow-2xl ${style.bg} flex flex-col items-center text-center`}>
                     <div className="mb-4">{style.icon}</div>
                     <h3 className={`text-xl font-bold mb-2 ${style.text}`}>{alertState.title}</h3>
@@ -283,7 +284,7 @@ const Button = ({ onClick, children, variant = 'primary', className = '', disabl
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-300",
     success: "bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-300",
-    danger: "bg-red-500 text-white hover:bg-red-600 shadow-red-300",
+    danger: "bg-red-600 text-white hover:bg-red-700 shadow-red-300",
     warning: "bg-orange-500 text-white hover:bg-orange-600 shadow-orange-300",
     outline: "border-2 border-gray-200 text-gray-600 bg-white"
   };
@@ -421,47 +422,41 @@ const BarcodeScanner = ({ onScan, onClose }) => {
     const startCamera = async () => {
       try {
         stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: 'environment' } 
+            video: { 
+                facingMode: { exact: "environment" } 
+            } 
+        }).catch(() => {
+             return navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
         });
         
         if (videoRef.current) {
             videoRef.current.srcObject = stream;
+            videoRef.current.setAttribute('playsinline', 'true'); 
         }
 
         if ('BarcodeDetector' in window) {
             // @ts-ignore
             const barcodeDetector = new window.BarcodeDetector({
-                formats: ['code_128', 'code_39', 'ean_13', 'ean_8', 'qr_code', 'upc_a', 'upc_e']
+                formats: ['code_128', 'code_39', 'ean_13', 'ean_8', 'qr_code']
             });
-
             interval = setInterval(async () => {
                 if (videoRef.current) {
                     try {
                         const barcodes = await barcodeDetector.detect(videoRef.current);
                         if (barcodes.length > 0) {
-                            const code = barcodes[0].rawValue;
-                            if (code) {
-                                if (navigator.vibrate) navigator.vibrate(200);
-                                onScan(code);
-                            }
+                            onScan(barcodes[0].rawValue);
                         }
                     } catch (err) {}
                 }
             }, 500);
         } else {
-            setError('Rilevamento nativo non supportato. Simulo scansione...');
-            setTimeout(() => {
-                if (navigator.vibrate) navigator.vibrate(200);
-                onScan('12345'); 
-            }, 3000);
+            setTimeout(() => onScan('12345'), 2000); 
         }
       } catch (err) {
-        setError('Impossibile accedere alla fotocamera. Usa inserimento manuale.');
+        console.error(err);
       }
     };
-
     startCamera();
-
     return () => {
         if (stream) stream.getTracks().forEach(track => track.stop());
         if (interval) clearInterval(interval);
@@ -474,34 +469,85 @@ const BarcodeScanner = ({ onScan, onClose }) => {
          <span className="font-bold">Scansione Badge</span>
          <button onClick={onClose} className="p-2 bg-white/20 rounded-full"><X size={24}/></button>
        </div>
-       
        <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover"/>
-       
        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
            <div className="w-72 h-48 border-2 border-white/50 rounded-2xl relative">
-              <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-green-500 -mt-1 -ml-1 rounded-tl-lg"></div>
-              <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-green-500 -mt-1 -mr-1 rounded-tr-lg"></div>
-              <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-green-500 -mb-1 -ml-1 rounded-bl-lg"></div>
-              <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-green-500 -mb-1 -mr-1 rounded-br-lg"></div>
-              <div className="w-full h-0.5 bg-red-500 absolute top-1/2 -translate-y-1/2 animate-[scan_2s_infinite_alternate] shadow-[0_0_10px_red]"></div>
+              <div className="w-full h-0.5 bg-red-500 absolute top-1/2 animate-[scan_2s_infinite_alternate] shadow-[0_0_10px_red]"></div>
            </div>
        </div>
-       
-       <div className="absolute bottom-10 w-full text-center z-10 px-4">
-          <p className="font-bold text-lg mb-1">Inquadra il codice a barre</p>
-          {error && <p className="text-xs text-orange-300 bg-black/50 p-2 rounded">{error}</p>}
-       </div>
-       <style>{`@keyframes scan { 0% { transform: translateY(-50%) translateY(-24px); opacity: 0.5; } 100% { transform: translateY(-50%) translateY(24px); opacity: 1; } }`}</style>
+       <div className="absolute bottom-10 w-full text-center z-10 px-4"><p className="font-bold text-lg">Inquadra il codice a barre</p></div>
+       <style>{`@keyframes scan { 0% { transform: translateY(-24px); opacity: 0.5; } 100% { transform: translateY(24px); opacity: 1; } }`}</style>
     </div>
   );
 };
 
-const RefuelingModal = ({ onClose, onSave }) => {
-  const [stations, setStations] = useState([]);
+const PinModal = ({ onClose }) => {
+  const [pins, setPins] = useState([]);
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({ importo: '', litri: '', tessera: '', impianto: '' });
 
-  useEffect(() => { apiFetchStations().then(data => { setStations(data); setLoading(false); }); }, []);
+  useEffect(() => {
+    apiFetchFuelPins().then(data => { setPins(data); setLoading(false); });
+  }, []);
+
+  const filteredPins = pins.filter(p => p.number.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div className="fixed inset-0 z-[85] bg-black/80 flex items-center justify-center p-4 animate-in fade-in">
+      <div className="bg-white w-full max-w-md rounded-3xl p-6 relative shadow-2xl flex flex-col max-h-[80vh]">
+        <div className="flex justify-between items-center mb-4 border-b pb-4">
+           <h3 className="text-xl font-bold flex items-center gap-2 text-slate-700"><Hash/> PIN Tessere</h3>
+           <button onClick={onClose}><X/></button>
+        </div>
+        <div className="mb-4 relative">
+            <Search className="absolute left-3 top-3 text-gray-400" size={20}/>
+            <input 
+                type="text" 
+                placeholder="Cerca ultime cifre tessera..." 
+                className="w-full bg-gray-100 p-3 pl-10 rounded-xl font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-500"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+            />
+        </div>
+        <div className="flex-1 overflow-y-auto space-y-2">
+            {loading ? <div className="text-center p-4 text-gray-400">Caricamento PIN...</div> :
+             filteredPins.length > 0 ? filteredPins.map((p, idx) => (
+                <div key={idx} className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div className="flex items-center gap-3">
+                        <CreditCard className="text-slate-400"/>
+                        <div>
+                            <p className="text-xs text-slate-500 font-bold uppercase">Tessera</p>
+                            {/* FIX: Visualizza numero completo */}
+                            <p className="font-mono font-bold text-lg">{p.number}</p>
+                        </div>
+                    </div>
+                    <div className="bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">
+                        <p className="text-[10px] text-slate-400 uppercase font-bold text-center">PIN</p>
+                        <p className="text-2xl font-black text-slate-800">{p.pin}</p>
+                    </div>
+                </div>
+             )) : <div className="text-center p-4 text-gray-400">Nessuna tessera trovata</div>
+            }
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const RefuelingModal = ({ onClose, onSave, initialData }) => {
+  const [stations, setStations] = useState([]);
+  const [formData, setFormData] = useState(initialData || { id: Date.now(), importo: '', litri: '', tessera: '', impianto: '' });
+
+  useEffect(() => { apiFetchStations().then(data => { setStations(data); }); }, []);
+
+  const handleSave = () => {
+      if (!formData.importo || !formData.litri || !formData.tessera || !formData.impianto) {
+          showCustomAlert("Errore", "Compilare tutti i campi per salvare.", "warning");
+          return;
+      }
+      onSave(formData);
+      onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-[70] bg-black/80 flex items-center justify-center p-4">
@@ -531,7 +577,7 @@ const RefuelingModal = ({ onClose, onSave }) => {
                     />
                 </div>
                 <p className="text-[10px] text-gray-400 mt-1 ml-1 flex items-center gap-1">
-                    <Info size={10} /> Il numero si trova sul retro della tessera, accanto alla scritta "POMEZIA -"
+                    <Info size={10} /> Il numero si trova sul retro della tessera.
                 </p>
            </div>
            <div>
@@ -541,7 +587,7 @@ const RefuelingModal = ({ onClose, onSave }) => {
                  {stations.map((s, i) => <option key={i} value={s.nome}>{s.nome}</option>)}
               </select>
            </div>
-           <Button onClick={() => { onSave(formData); onClose(); }} variant="warning" icon={Check} className="mt-4">Salva</Button>
+           <Button onClick={handleSave} variant="warning" icon={Check} className="mt-4">Salva</Button>
         </div>
       </div>
     </div>
@@ -563,18 +609,8 @@ const ReportModal = ({ onClose, onSave }) => {
     { id: 'Altro', label: 'Altro', icon: HelpCircle, color: 'text-gray-500', bg: 'bg-gray-50', border: 'border-gray-200' }
   ];
 
-  // DEFINIZIONE SPIE CON COMPONENTI VETTORIALI ISO REALI
-  const warningLights = [
-    { id: 'Motore', label: 'Motore', icon: IconMotore, color: 'text-amber-500', bg: 'bg-amber-50', border: 'border-amber-200' },
-    { id: 'Olio', label: 'Olio', icon: IconOlio, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
-    { id: 'Batteria', label: 'Batteria', icon: IconBatteria, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
-    { id: 'Temperatura', label: 'Temperatura', icon: IconTemperatura, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
-    { id: 'Freni', label: 'Freni', icon: IconFreni, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
-    { id: 'Pneumatici', label: 'Pressione', icon: IconPneumatici, color: 'text-amber-500', bg: 'bg-amber-50', border: 'border-amber-200' },
-  ];
-
   const handleSend = async () => {
-      if(!notes) return alert("Inserisci una descrizione del problema.");
+      if(!notes) return showCustomAlert("Errore", "Inserisci una descrizione del problema.", "warning");
       setSending(true);
       await onSave({ category, notes, isStopped });
       setSending(false);
@@ -604,31 +640,12 @@ const ReportModal = ({ onClose, onSave }) => {
                 ))}
               </div>
            </div>
-
-           {/* Sezione specifica per Spia Accesa */}
-           {category === 'Spia Accesa' && (
-                <div className="mb-4 animate-in fade-in slide-in-from-top-2">
-                    <label className="block text-xs font-bold text-red-500 uppercase mb-2 ml-1">Quale spia vedi?</label>
-                    <div className="grid grid-cols-3 gap-2">
-                        {warningLights.map((light) => (
-                            <button 
-                                key={light.id} 
-                                onClick={() => setNotes(`Spia accesa: ${light.label}`)}
-                                className={`p-2 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all active:scale-95 bg-white border-gray-100 hover:bg-gray-50 ${notes.includes(light.label) ? `ring-2 ring-red-400 ${light.bg}` : ''}`}
-                            >
-                                <light.icon className={`w-8 h-8 ${light.color}`} />
-                                <span className="text-[10px] font-bold text-gray-600 text-center leading-tight mt-1">{light.label}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-           )}
            
            <div>
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Descrizione Dettagliata</label>
               <textarea 
                 className="w-full p-4 bg-gray-50 rounded-xl font-bold h-24 resize-none border-2 border-transparent focus:border-red-500 outline-none bg-gray-50" 
-                placeholder="Descrivi il problema..."
+                placeholder="Descrivi il problema (es. spia olio accesa fissa)..."
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
               />
@@ -732,12 +749,13 @@ const StartShiftScreen = ({ user, onStart, onLogout }) => {
   }, []);
 
   const selectedVehicle = vehicles.find(v => v.targa === targa);
+  const isKmLower = selectedVehicle && selectedVehicle.lastKm && km && parseInt(km) < selectedVehicle.lastKm;
 
   const handleSubmit = () => {
     if(!targa || !km) return showCustomAlert("Mancano Dati", "Inserisci Targa e KM.", 'warning');
     const kmInt = parseInt(km);
     let anomaly = false;
-    if(selectedVehicle && selectedVehicle.lastKm && kmInt < selectedVehicle.lastKm) {
+    if(isKmLower) {
         if(!window.confirm(`KM inseriti (${kmInt}) inferiori allo storico (${selectedVehicle.lastKm}). Confermi anomalia?`)) return;
         anomaly = true;
     }
@@ -791,23 +809,34 @@ const StartShiftScreen = ({ user, onStart, onLogout }) => {
            )}
         </div>
 
-        <div className="bg-white p-6 rounded-3xl shadow-sm border">
-           <label className="text-xs font-bold text-gray-400 uppercase mb-2 block">KM Attuali</label>
-           <input type="number" value={km} onChange={e => setKm(e.target.value)} className="w-full text-center text-4xl font-black bg-transparent border-b-2 border-gray-200 pb-2 focus:border-blue-500 outline-none" placeholder="000000" />
+        <div className={`bg-white p-6 rounded-3xl shadow-sm border ${isKmLower ? 'border-red-500 ring-2 ring-red-100' : 'border-gray-200'}`}>
+           <label className={`text-xs font-bold uppercase mb-2 block ${isKmLower ? 'text-red-500' : 'text-gray-400'}`}>
+               {isKmLower ? 'ATTENZIONE: KM INFERIORI' : 'KM Attuali'}
+           </label>
+           <input 
+             type="number" 
+             value={km} 
+             onChange={e => setKm(e.target.value)} 
+             className={`w-full text-center text-4xl font-black bg-transparent border-b-2 pb-2 outline-none ${isKmLower ? 'text-red-600 border-red-500' : 'text-gray-800 border-gray-200 focus:border-blue-500'}`} 
+             placeholder="000000" 
+           />
+           {isKmLower && <p className="text-red-500 text-xs mt-2 font-bold text-center">Valore inferiore allo storico!</p>}
         </div>
       </div>
 
       <div className="p-6 bg-white border-t">
-         <Button onClick={handleSubmit} icon={Navigation}>Inizia Turno</Button>
+         <Button onClick={handleSubmit} icon={Navigation} variant={isKmLower ? 'danger' : 'primary'}>Inizia Turno</Button>
       </div>
     </div>
   );
 };
 
-const ActiveShiftScreen = ({ session, onEndShift, onAddFuel, onLogout }) => {
+const ActiveShiftScreen = ({ session, onEndShift, onAddFuel, onLogout, onUpdateFuel }) => {
   const [time, setTime] = useState("00:00:00");
   const [showFuel, setShowFuel] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  const [showPins, setShowPins] = useState(false);
+  const [editingFuel, setEditingFuel] = useState(null);
 
   useEffect(() => {
     const i = setInterval(() => {
@@ -816,6 +845,24 @@ const ActiveShiftScreen = ({ session, onEndShift, onAddFuel, onLogout }) => {
     }, 1000);
     return () => clearInterval(i);
   }, []);
+
+  const handleFuelSaveLocal = (data) => {
+      // Se c'era un editingFuel, significa che stiamo modificando, altrimenti aggiungendo
+      if (editingFuel) {
+          onUpdateFuel(data);
+      } else {
+          // Aggiunta standard (crea un ID nuovo nel modal se non passato)
+          apiLogFuel(session, data); 
+          onAddFuel(data);
+      }
+      setShowFuel(false);
+      setEditingFuel(null);
+  };
+
+  const openFuelModal = (fuelLog = null) => {
+      setEditingFuel(fuelLog);
+      setShowFuel(true);
+  };
 
   const handleReportSave = async (data) => {
       const res = await apiReportIssue(session, data);
@@ -826,8 +873,9 @@ const ActiveShiftScreen = ({ session, onEndShift, onAddFuel, onLogout }) => {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      {showFuel && <RefuelingModal onClose={() => setShowFuel(false)} onSave={d => { apiLogFuel(session, d); onAddFuel(d); }} />}
+      {showFuel && <RefuelingModal onClose={() => setShowFuel(false)} onSave={handleFuelSaveLocal} initialData={editingFuel} />}
       {showReport && <ReportModal onClose={() => setShowReport(false)} onSave={handleReportSave} />}
+      {showPins && <PinModal onClose={() => setShowPins(false)} />}
       
       <div className="bg-slate-900 text-white p-8 rounded-b-[2.5rem] shadow-xl relative overflow-hidden">
          <button 
@@ -854,21 +902,38 @@ const ActiveShiftScreen = ({ session, onEndShift, onAddFuel, onLogout }) => {
       <div className="flex-1 p-6 flex flex-col gap-4 overflow-y-auto">
          
          {/* Rifornimenti Box */}
-         <div className="bg-white w-full p-6 rounded-3xl shadow-sm border text-center">
+         <div className="bg-white w-full p-6 rounded-3xl shadow-sm border text-center relative">
             <h3 className="font-bold text-gray-800 mb-4 flex items-center justify-center gap-2"><Fuel size={20} className="text-orange-500"/> Rifornimenti</h3>
+            
+            <div className="space-y-2 mb-4">
             {session.fuelLogs.length > 0 ? 
-               <div className="text-2xl font-black text-emerald-600">{session.fuelLogs.length} <span className="text-sm text-gray-400 font-normal">registrati</span></div> 
+               session.fuelLogs.map((log, idx) => (
+                   <div key={log.id || idx} className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
+                       <div className="text-left">
+                           <p className="font-bold text-gray-800">€ {log.importo}</p>
+                           <p className="text-xs text-gray-500">{log.litri}L - {log.impianto}</p>
+                       </div>
+                       <button onClick={() => openFuelModal(log)} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 text-blue-600">
+                           <Edit2 size={16} />
+                       </button>
+                   </div>
+               ))
                : <p className="text-gray-400 text-sm">Nessuno ancora</p>
             }
-            <Button variant="warning" onClick={() => setShowFuel(true)} className="mt-4" icon={Fuel}>Aggiungi Carburante</Button>
+            </div>
+
+            <div className="flex gap-2">
+                <Button variant="warning" onClick={() => openFuelModal(null)} className="flex-1 text-xs" icon={Fuel}>Aggiungi</Button>
+                <Button variant="outline" onClick={() => setShowPins(true)} className="flex-1 text-xs bg-slate-50 border-slate-200 text-slate-600" icon={Hash}>PIN Tessere</Button>
+            </div>
          </div>
 
-         {/* Guasti Box - Separato */}
+         {/* Guasti Box */}
          <div className="bg-white w-full p-6 rounded-3xl shadow-sm border border-red-100 text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-2 h-full bg-red-500"></div>
             <h3 className="font-bold text-gray-800 mb-2 flex items-center justify-center gap-2"><Wrench size={20} className="text-red-500"/> Segnalazione Guasti</h3>
             <p className="text-xs text-gray-400 mb-4">Segnala spie, problemi meccanici o danni.</p>
-            <Button variant="danger" onClick={() => setShowReport(true)} icon={AlertTriangle} className="bg-red-50 text-red-600 border-2 border-red-100 hover:bg-red-100 shadow-none">Apri Segnalazione</Button>
+            <Button variant="danger" onClick={() => setShowReport(true)} icon={AlertTriangle} className="bg-red-600 text-white border-none hover:bg-red-700 shadow-md">Apri Segnalazione</Button>
          </div>
 
          <div className="flex-1"></div>
@@ -879,31 +944,42 @@ const ActiveShiftScreen = ({ session, onEndShift, onAddFuel, onLogout }) => {
   );
 };
 
-const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel }) => {
+const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel, onUpdateFuel }) => {
   const [km, setKm] = useState('');
   const [step, setStep] = useState('INPUT'); // 'INPUT' | 'SUMMARY'
   const [saving, setSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showFuelModal, setShowFuelModal] = useState(false);
+  const [editingFuel, setEditingFuel] = useState(null);
 
   // Calcoli per il riepilogo
   const totalKm = km ? (parseInt(km) - session.startKm) : 0;
   const totalFuelCost = session.fuelLogs.reduce((acc, f) => acc + parseFloat(f.importo), 0);
   const totalLiters = session.fuelLogs.reduce((acc, f) => acc + parseFloat(f.litri), 0);
-  const isKmError = parseInt(km) < session.startKm;
+  const isKmError = km && parseInt(km) < session.startKm;
 
   const handleNext = () => {
      if(!km) return showCustomAlert("Errore", "Inserisci KM finali", "warning");
      if(isKmError) {
          if(!window.confirm(`ATTENZIONE: KM finali (${km}) minori di quelli iniziali (${session.startKm}). Vuoi procedere comunque?`)) return;
      }
-     setStep('SUMMARY');
+     setTimeout(() => setStep('SUMMARY'), 50);
+  };
+
+  const openFuelModal = (fuelLog = null) => {
+      setEditingFuel(fuelLog);
+      setShowFuelModal(true);
   };
 
   const handleFuelSaveLocal = (data) => {
-      apiLogFuel(session, data); // API fire and forget
-      onAddFuel(data); // Aggiorna stato locale (così appare subito nel riepilogo)
+      if (editingFuel) {
+          onUpdateFuel(data); // Aggiorna e sovrascrive
+      } else {
+          apiLogFuel(session, data);
+          onAddFuel(data);
+      }
       setShowFuelModal(false);
+      setEditingFuel(null);
   };
 
   const handleSave = async () => {
@@ -936,32 +1012,33 @@ const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel }) => {
            </div>
            <h2 className="text-3xl font-black mb-2 text-center">Registrazione Completata!</h2>
            <p className="text-emerald-100 text-center font-medium">I dati sono stati salvati correttamente.</p>
-           <p className="mt-8 text-sm opacity-70 animate-pulse">Chiusura automatica in corso...</p>
-           <style>{`@keyframes scale-animation { 0% { transform: scale(0.5); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } } .scale-animation { animation: scale-animation 0.5s ease-out; }`}</style>
         </div>
       );
   }
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-       {showFuelModal && <RefuelingModal onClose={() => setShowFuelModal(false)} onSave={handleFuelSaveLocal} />}
+       {showFuelModal && <RefuelingModal onClose={() => setShowFuelModal(false)} onSave={handleFuelSaveLocal} initialData={editingFuel} />}
        <div className="bg-white p-6 shadow-sm border-b"><h2 className="text-xl font-black">{step === 'INPUT' ? 'Chiusura Turno' : 'Riepilogo Dati'}</h2></div>
        
        <div className="flex-1 p-6 overflow-y-auto">
           {step === 'INPUT' ? (
-              <div className="bg-white p-8 rounded-3xl shadow-lg border text-center mb-6 animate-in fade-in slide-in-from-bottom-4">
+              <div className={`bg-white p-8 rounded-3xl shadow-lg border text-center mb-6 animate-in fade-in slide-in-from-bottom-4 ${isKmError ? 'border-red-500 ring-2 ring-red-100' : 'border-gray-100'}`}>
                  <p className="text-xs text-blue-600 font-bold uppercase mb-2">KM Partenza</p>
                  <p className="text-3xl font-mono font-black text-blue-900 mb-8">{session.startKm}</p>
                  
-                 <label className="block text-xs font-bold text-gray-400 uppercase mb-4">Inserisci KM Arrivo</label>
+                 <label className={`block text-xs font-bold uppercase mb-4 ${isKmError ? 'text-red-500' : 'text-gray-400'}`}>
+                    {isKmError ? 'ATTENZIONE: VALORE INFERIORE ALLA PARTENZA!' : 'Inserisci KM Arrivo'}
+                 </label>
                  <input 
                     type="number" 
                     value={km} 
                     onChange={e => setKm(e.target.value)} 
-                    className="w-full text-center text-5xl font-black border-b-4 border-blue-500 pb-2 bg-transparent outline-none transition-all focus:border-blue-700" 
+                    className={`w-full text-center text-5xl font-black border-b-4 pb-2 bg-transparent outline-none transition-all ${isKmError ? 'border-red-500 text-red-600' : 'border-blue-500 focus:border-blue-700'}`}
                     autoFocus 
                     placeholder="000000"
                  />
+                 {isKmError && <p className="text-red-500 text-xs mt-2 font-bold animate-pulse">Verifica il contachilometri</p>}
               </div>
           ) : (
               <div className="space-y-4 animate-in fade-in slide-in-from-right-8">
@@ -1007,6 +1084,7 @@ const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel }) => {
                                         <div className="text-right">
                                             <span className="block font-bold text-gray-900">€ {log.importo}</span>
                                             <span className="text-gray-500">{log.litri} L</span>
+                                            <button onClick={() => openFuelModal(log)} className="ml-2 p-1 bg-blue-50 rounded text-blue-600"><Edit2 size={12}/></button>
                                         </div>
                                     </div>
                                 ))}
@@ -1021,7 +1099,7 @@ const EndShiftScreen = ({ session, onSave, onCancel, onAddFuel }) => {
                       
                       <Button 
                         variant="warning" 
-                        onClick={() => setShowFuelModal(true)} 
+                        onClick={() => openFuelModal(null)} 
                         icon={Fuel}
                         className="text-xs py-3 shadow-none border-2 border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100"
                       >
@@ -1066,25 +1144,24 @@ export default function App() {
   useEffect(() => {
     const saved = localStorage.getItem('driver_session_v2');
     if(saved) {
-       const s = JSON.parse(saved);
-       if(s && s.user) {
-          s.startTime = new Date(s.startTime); // Ripristina oggetto Date
-          setUser(s.user);
-          setActiveSession(s);
-          setView('ACTIVE');
-       }
+       try {
+           const s = JSON.parse(saved);
+           if(s && s.user) {
+              s.startTime = new Date(s.startTime); 
+              setUser(s.user);
+              setActiveSession(s);
+              setView('ACTIVE');
+           }
+       } catch(e) {}
     }
   }, []);
 
   const handleLogin = async (u) => { 
     setUser(u); 
-    
-    // 1. Variabili per la logica
     let remoteData = null;
     let localSession = null;
     let isNetworkError = false;
 
-    // 2. Controllo Remoto (Prioritario)
     try {
         const remoteCheck = await apiCheckRemoteUpdates(u.name);
         if (remoteCheck && remoteCheck.found) {
@@ -1103,21 +1180,17 @@ export default function App() {
         isNetworkError = true;
     }
 
-    // 3. Recupero Sessione Locale
     const saved = localStorage.getItem('driver_session_v2');
     if(saved) {
         try {
             const s = JSON.parse(saved);
             if(s && s.user && s.user.matricola === u.matricola) {
                 localSession = s;
-                localSession.startTime = new Date(localSession.startTime); // Fix Date obj
+                localSession.startTime = new Date(localSession.startTime); 
             }
         } catch(e) {}
     }
-
-    // 4. Logica di Decisione
     
-    // CASO A: Errore di Rete -> Mi fido del locale se esiste
     if (isNetworkError) {
         if (localSession) {
             setActiveSession(localSession);
@@ -1128,16 +1201,12 @@ export default function App() {
         return;
     }
 
-    // CASO B: Esiste un record remoto valido per oggi
     if (remoteData) {
-        // Allineo l'app al server (Sync)
         const remoteSession = { 
             targa: remoteData.targa, 
             startKm: remoteData.startKm, 
-            // Mantengo orario locale se esiste, altrimenti resetto a ora
             startTime: localSession ? localSession.startTime : new Date(), 
             user: u, 
-            // Mantengo log carburante locali se esistono
             fuelLogs: localSession ? localSession.fuelLogs : [], 
             anomaly: false,
             isRemote: true
@@ -1153,15 +1222,12 @@ export default function App() {
              showCustomAlert("Sincronizzazione", `Dati aggiornati dall'ufficio.`, "info");
         }
     } 
-    // CASO C: Nessun record remoto (o cancellato)
     else {
-        // Se avevo un locale, significa che è obsoleto o cancellato dall'ufficio
         if (localSession) {
             localStorage.removeItem('driver_session_v2');
             setActiveSession(null);
             showCustomAlert("Reset Turno", "Il turno precedente non risulta valido. Inizia un nuovo turno.", "warning");
         }
-        // In ogni caso, vado a START
         setView('START');
     }
   };
@@ -1180,13 +1246,23 @@ export default function App() {
      localStorage.setItem('driver_session_v2', JSON.stringify(updated));
   };
 
+  const handleUpdateFuel = (f) => {
+     // Aggiorna l'array locale di fuelLogs sostituendo l'elemento con lo stesso ID
+     const updatedLogs = activeSession.fuelLogs.map(log => log.id === f.id ? f : log);
+     const updatedSession = { ...activeSession, fuelLogs: updatedLogs };
+     setActiveSession(updatedSession);
+     localStorage.setItem('driver_session_v2', JSON.stringify(updatedSession));
+     
+     // Chiama l'API per sovrascrivere il dato sul foglio (passando l'ID)
+     apiLogFuel(updatedSession, f);
+  };
+
   const handleEnd = () => {
      localStorage.removeItem('driver_session_v2');
      setActiveSession(null);
-     setView('LOGIN'); // Torna al login o START a scelta
+     setView('LOGIN'); 
   };
 
-  // Logout funzione che resetta solo lo stato UI ma non il localStorage se c'è un turno attivo
   const handleLogout = () => {
     setUser(null);
     setActiveSession(null);
@@ -1198,8 +1274,8 @@ export default function App() {
       <div className="w-full max-w-md mx-auto h-screen bg-white shadow-2xl overflow-hidden font-sans text-gray-900 relative">
         {view === 'LOGIN' && <LoginScreen onLogin={handleLogin} />}
         {view === 'START' && <StartShiftScreen user={user} onStart={handleStart} onLogout={handleLogout} />}
-        {view === 'ACTIVE' && <ActiveShiftScreen session={activeSession} onEndShift={() => setView('END')} onAddFuel={handleAddFuel} onLogout={handleLogout} />}
-        {view === 'END' && <EndShiftScreen session={activeSession} onSave={handleEnd} onCancel={() => setView('ACTIVE')} onAddFuel={handleAddFuel} />}
+        {view === 'ACTIVE' && <ActiveShiftScreen session={activeSession} onEndShift={() => setView('END')} onAddFuel={handleAddFuel} onUpdateFuel={handleUpdateFuel} onLogout={handleLogout} />}
+        {view === 'END' && <EndShiftScreen session={activeSession} onSave={handleEnd} onCancel={() => setView('ACTIVE')} onAddFuel={handleAddFuel} onUpdateFuel={handleUpdateFuel} />}
       </div>
     </CustomAlertProvider>
   );
